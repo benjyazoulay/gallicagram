@@ -5,6 +5,7 @@ Cet outil est autonome, une fois ouvert dans R il suffit de le lancer pour voir 
 Deux types d'affichages sont possibles : une résolution à l'année et une résolution au mois. Ils sont fondés sur deux extractions distinctes.
 ![Fréquence d'usage de l'expression Révolution nationale durant l'Occupation](https://user-images.githubusercontent.com/25954316/93106836-19294200-f6b1-11ea-9f75-18f51218deda.png)
 ![Fréquence d'usage de l'expression Révolution nationale](https://user-images.githubusercontent.com/25954316/93106854-1f1f2300-f6b1-11ea-88f6-fa4587b5e9fe.png)
+![Fréquence d'usage de l'expression Collaboration durant l'Occupation](https://user-images.githubusercontent.com/25954316/93110412-9060d500-f6b5-11ea-9246-090f2bc966fe.png)
 ## Gallicagram_personnages_historiques procède à une recherche par proximité du nom avec le prénom pour obtenir un résultat plus précis
 
 
