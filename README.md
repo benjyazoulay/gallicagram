@@ -1,5 +1,5 @@
 # Gallicagram
-Gallicagram est un outil de visualisation de l'évolution de la fréquence d'usage d'un syntagme dans le corpus de presse de Gallica. Cet outil, directement inspiré de Google Ngram a été créé par Benjamin Azoulay.
+Gallicagram est un outil de visualisation de l'évolution de la fréquence d'usage d'un syntagme dans le corpus de presse de Gallica. Cet outil, directement inspiré de Google Ngram a été créé par Benjamin Azoulay. Gallicagram_compare (sous dossier) permet la comparaison de termes selon le même principe. Gallicagram_personnages_historiques procède à une recherche plus fine destinée à un couple nom/prénom.
 
 Cet outil est autonome, une fois ouvert dans R il suffit de le lancer pour voir le résultat. Tous les paramètres (bornes chronologiques, mots recherchés, affichage du graphe) sont bien sûr modifiables.
 Deux types d'affichages sont possibles : une résolution à l'année et une résolution au mois. Ils sont fondés sur deux extractions distinctes.
