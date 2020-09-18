@@ -29,7 +29,7 @@ for (j in 1:length(liste$termes))
 
   for (i in 1900:1940)
   {
-  mot<-str_replace(liste$termes[j]," ","%20")#un espace entre deux mots doit être remplacé par "%20"
+  mot<-str_replace_all(liste$termes[j]," ","%20")#un espace entre deux mots doit être remplacé par "%20"
   y<-as.character(i)  
   url<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=1&maximumRecords=1&page=1collapsing=false&exactSearch=true&query=text%20adj%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",y,"/01/01%22%20and%20gallicapublication_date%3C=%22",y,"/12/31%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
   ngram<-as.character(read_xml(url))
@@ -72,7 +72,7 @@ for (i in 1940:1944)
 {
   for (j in 1:12) 
   {
-    mot<-str_replace(liste$termes[x]," ","%20")#un espace entre deux mots doit être remplacé par "%20"
+    mot<-str_replace_all(liste$termes[x]," ","%20")#un espace entre deux mots doit être remplacé par "%20"
     y<-as.character(i)
     z<-as.character(j)
     if(nchar(z)<2){z<-str_c("0",z)}
