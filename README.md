@@ -3,7 +3,8 @@ Gallicagram est un outil de visualisation de l'évolution de la fréquence d'usa
 
 Cet outil est autonome, une fois ouvert dans R il suffit de le lancer pour voir le résultat. Tous les paramètres (bornes chronologiques, mots recherchés, affichage du graphe) sont bien sûr modifiables.
 Deux types d'affichages sont possibles : une résolution à l'année et une résolution au mois. Ils sont fondés sur deux extractions distinctes.
-![Fréquence d'apparition dans la presse du nom de 4 grands militaires français](https://user-images.githubusercontent.com/25954316/93612184-7b46b780-f9cf-11ea-8dca-2a6a724d5f6b.png)
+![Fréquence d'apparition dans la presse](https://user-images.githubusercontent.com/25954316/93612287-9e716700-f9cf-11ea-9790-0a57f2880293.png)
+
 
 ## Gallicagram_personnages_historiques procède à une recherche par proximité du nom avec le prénom pour obtenir un résultat plus précis
 
