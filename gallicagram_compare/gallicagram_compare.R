@@ -2,7 +2,7 @@ library(ggplot2)
 library(lubridate)
 library(stringr)
 library(utils)
-library(xml)
+library(xml2)
 library(dplyr)
 setwd("C:/Users/Benjamin/Downloads/gallicagram")
 
