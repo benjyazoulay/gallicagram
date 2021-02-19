@@ -10,7 +10,7 @@ setwd("C:/Users/Benjamin/Downloads/gallicagram")
 ########## EXTRACTION
 gallicagram = function(mot,beginning,end,definition="year"){
 if(definition=="year"){
-tab5<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
+tableau<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
 for (i in beginning:end){
   #mot<-"revolution%20nationale" #un espace entre deux mots doit être remplacé par "%20"
   y<-as.character(i)  
@@ -22,28 +22,28 @@ for (i in beginning:end){
   ngram_base<-as.character(read_xml(url_base))
   b<-str_extract(str_extract(ngram_base,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
   
-  tab5[nrow(tab5)+1,] = NA
-  tab5[nrow(tab5),]<-c(i,a,b)
+  tableau[nrow(tableau)+1,] = NA
+  tableau[nrow(tableau),]<-c(i,a,b)
   print(i)
 }
 
 #####CALCUL DE L'INDICATEUR
-colnames(tab5)<-c("date","nb_temp","base_temp")
-tab5$date<-as.integer(tab5$date)
-tab5$nb_temp<-as.integer(tab5$nb_temp)
-tab5$base_temp<-as.integer(tab5$base_temp)
-tab5$ratio_temp<-tab5$nb_temp/tab5$base_temp
+colnames(tableau)<-c("date","nb_temp","base_temp")
+tableau$date<-as.integer(tableau$date)
+tableau$nb_temp<-as.integer(tableau$nb_temp)
+tableau$base_temp<-as.integer(tableau$base_temp)
+tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
 
 #####AFFICHAGE DU GRAPHE
-
-ggplot(tab5,aes(date,ratio_temp))+geom_line(size=1)+ theme_classic()+
-  scale_x_continuous(breaks = seq(1900,1950,2))+
+title = paste("Fréquence d'usage de l'expression '", mot,sep="")
+title=paste(title,"' (Gallica-Presse)",sep="")
+a = ggplot(tableau,aes(date,ratio_temp))+geom_line(size=1)+ theme_classic()+
   theme(axis.text.x = element_text(angle=45))+
   xlab("Date")+ylab("Part des numéros faisant mention de l'expression \n 'Révolution nationale' dans le corpus Gallica-Presse")+
-  ggtitle("Fréquence d'usage de l'expression 'Révolution nationale' (Gallica-Presse)")+
-  theme(axis.ticks = element_line(colour = "grey")) + 
+  ggtitle(title)+
   guides(color=guide_legend(override.aes=list(fill=NA)))  + 
-  scale_x_continuous(expand=c(0,0)) + theme(plot.title = element_text(hjust = 0.5))
+ theme(plot.title = element_text(hjust = 0.5))
+print(a)
 } 
 if(definition=="month"){
 ##########POUR UNE RESOLUTION AU MOIS##########
@@ -71,7 +71,7 @@ for (i in 1940:1944){
     print(str_c(i,"-",j))
   }
 }
-}
+
 
 #####CALCUL DE L'INDICATEUR
 tab6<-tab6[-1,]
@@ -89,5 +89,5 @@ tab6%>%subset(tab6$date>=ymd(19400101) & tab6$date<=ymd(19450101))%>% ggplot(aes
   theme(axis.ticks = element_line(colour = "grey")) + 
   guides(color=guide_legend(override.aes=list(fill=NA)))  + 
   scale_x_continuous(expand=c(0,0)) + theme(plot.title = element_text(hjust = 0.5))
-
+}
 }
