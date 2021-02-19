@@ -8,12 +8,11 @@ setwd("C:/Users/Benjamin/Downloads/gallicagram")
 
 
 ########## EXTRACTION
-tab5<-as.data.frame(cbind(c(NA),c(NA),c(NA)))
-tab5<-tab5[-1,]
-
-for (i in 1900:1950)
-{
-  mot<-"revolution%20nationale" #un espace entre deux mots doit être remplacé par "%20"
+gallicagram = function(mot,beginning,end,definition="year"){
+if(definition=="year"){
+tab5<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
+for (i in beginning:end){
+  #mot<-"revolution%20nationale" #un espace entre deux mots doit être remplacé par "%20"
   y<-as.character(i)  
   url<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=1&maximumRecords=1&page=1collapsing=false&exactSearch=true&query=text%20adj%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",y,"/01/01%22%20and%20gallicapublication_date%3C=%22",y,"/12/31%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
   ngram<-as.character(read_xml(url))
@@ -23,7 +22,8 @@ for (i in 1900:1950)
   ngram_base<-as.character(read_xml(url_base))
   b<-str_extract(str_extract(ngram_base,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
   
-  tab5<-rbind(tab5,c(i,a,b))
+  tab5[nrow(tab5)+1,] = NA
+  tab5[nrow(tab5),]<-c(i,a,b)
   print(i)
 }
 
@@ -36,21 +36,22 @@ tab5$ratio_temp<-tab5$nb_temp/tab5$base_temp
 
 #####AFFICHAGE DU GRAPHE
 
-ggplot(tab5,aes(date,ratio_temp))+geom_line(size=1)+
+ggplot(tab5,aes(date,ratio_temp))+geom_line(size=1)+ theme_classic()+
   scale_x_continuous(breaks = seq(1900,1950,2))+
   theme(axis.text.x = element_text(angle=45))+
   xlab("Date")+ylab("Part des numéros faisant mention de l'expression \n 'Révolution nationale' dans le corpus Gallica-Presse")+
   ggtitle("Fréquence d'usage de l'expression 'Révolution nationale' (Gallica-Presse)")+
-  ggsave("Fréquence d'usage de l'expression Révolution nationale.png",scale=2)
-
-
+  theme(axis.ticks = element_line(colour = "grey")) + 
+  guides(color=guide_legend(override.aes=list(fill=NA)))  + 
+  scale_x_continuous(expand=c(0,0)) + theme(plot.title = element_text(hjust = 0.5))
+} 
+if(definition=="month"){
 ##########POUR UNE RESOLUTION AU MOIS##########
 
-tab6<-as.data.frame(cbind(c(NA),c(NA),c(NA)))
+tab6<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
 colnames(tab6)<-c("date","nb_temp","base_temp")
 ########## EXTRACTION
-for (i in 1940:1944)
-{
+for (i in 1940:1944){
   for (j in 1:12) 
   {
     mot<-"revolution%20nationale"
@@ -65,10 +66,11 @@ for (i in 1940:1944)
     ngram_base<-as.character(read_xml(url_base))
     b<-str_extract(str_extract(ngram_base,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
     date<-str_c(y,z,"01")
-    tab6<-rbind(tab6,c(date,a,b))
+    tab6[nrow(tab6)+1,] = NA
+    tab6[nrow(tab6),] = c(date,a,b)
     print(str_c(i,"-",j))
   }
-  
+}
 }
 
 #####CALCUL DE L'INDICATEUR
@@ -79,9 +81,13 @@ tab6$base_temp<-as.integer(tab6$base_temp)
 tab6$ratio_temp<-tab6$nb_temp/tab6$base_temp
 
 #####AFFICHAGE
-tab6%>%subset(tab6$date>=ymd(19400101) & tab6$date<=ymd(19450101))%>% ggplot(aes(date,ratio_temp))+geom_line(size=1)+
+tab6%>%subset(tab6$date>=ymd(19400101) & tab6$date<=ymd(19450101))%>% ggplot(aes(date,ratio_temp))+geom_line(size=1)+ theme_classic() +
   scale_x_date(breaks=seq(as.Date("1940/1/1"), as.Date("1945/1/1"), "2 months"),date_labels = "%b %Y")+
   theme(axis.text.x = element_text(angle=45))+
   xlab("Date")+ylab("Part des numéros faisant mention de l'expression \n 'Révolution nationale' dans le corpus Gallica-Presse")+
   ggtitle("Fréquence d'usage de l'expression 'Révolution nationale' durant l'Occupation (Gallica-Presse)")+
-  ggsave("Fréquence d'usage de l'expression Révolution nationale durant l'Occupation.png",scale=2)
+  theme(axis.ticks = element_line(colour = "grey")) + 
+  guides(color=guide_legend(override.aes=list(fill=NA)))  + 
+  scale_x_continuous(expand=c(0,0)) + theme(plot.title = element_text(hjust = 0.5))
+
+}
