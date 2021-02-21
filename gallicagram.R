@@ -3,12 +3,14 @@ library(lubridate)
 library(stringr)
 library(utils)
 library(xml2)
+library(stringr)
 library(dplyr)
 setwd("C:/Users/Benjamin/Downloads/gallicagram")
 
 
-########## EXTRACTION
-gallicagram = function(mot,beginning,end,definition="year"){
+
+gallicagram = function(mot,beginning,end,definition="year",span=2/(end-beginning)){
+mot = str_replace(mot," ","%20")
 if(definition=="year"){
 tableau<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
 for (i in beginning:end){
@@ -27,7 +29,6 @@ for (i in beginning:end){
   print(i)
 }
 
-#####CALCUL DE L'INDICATEUR
 colnames(tableau)<-c("date","nb_temp","base_temp")
 tableau$date<-as.integer(tableau$date)
 tableau$nb_temp<-as.integer(tableau$nb_temp)
@@ -37,10 +38,9 @@ tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
 #####AFFICHAGE DU GRAPHE
 title = paste("Fréquence d'usage de l'expression '", mot,sep="")
 title=paste(title,"' (Gallica-Presse)",sep="")
-a = ggplot(tableau,aes(date,ratio_temp))+geom_line(size=1)+ theme_classic()+
+a = ggplot(tableau,aes(date,ratio_temp))+geom_smooth(size=1,span=span,se=F)+ theme_classic()+
   theme(axis.text.x = element_text(angle=45))+
-  xlab("Date")+ylab("Part des numéros faisant mention de l'expression \n 'Révolution nationale' dans le corpus Gallica-Presse")+
-  ggtitle(title)+
+  xlab("Date") +  ggtitle(title)+
   guides(color=guide_legend(override.aes=list(fill=NA)))  + 
  theme(plot.title = element_text(hjust = 0.5))
 print(a)
@@ -51,10 +51,9 @@ if(definition=="month"){
 tab6<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
 colnames(tab6)<-c("date","nb_temp","base_temp")
 ########## EXTRACTION
-for (i in 1940:1944){
+for (i in beginning:end){
   for (j in 1:12) 
   {
-    mot<-"revolution%20nationale"
     y<-as.character(i)
     z<-as.character(j)
     if(nchar(z)<2){z<-str_c("0",z)}
@@ -91,3 +90,4 @@ tab6%>%subset(tab6$date>=ymd(19400101) & tab6$date<=ymd(19450101))%>% ggplot(aes
   scale_x_continuous(expand=c(0,0)) + theme(plot.title = element_text(hjust = 0.5))
 }
 }
+# 
