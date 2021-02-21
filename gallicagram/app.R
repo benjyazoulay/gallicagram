@@ -1,5 +1,8 @@
 library(shiny)
 library(ggplot2)
+library(plotly)
+library(stringr)
+library(xml2)
 
 ui <- fluidPage(
    
@@ -21,7 +24,7 @@ ui <- fluidPage(
         ),
       
             mainPanel(
-         plotOutput("plot")
+         plotlyOutput("plot")
       )
    )
 )
@@ -59,12 +62,8 @@ server <- function(input, output) {
       #####AFFICHAGE DU GRAPHE
       title = paste("Fréquence d'usage de l'expression '", mot,sep="")
       title=paste(title,"' (Gallica-Presse)",sep="")
-      plot = ggplot(tableau,aes(date,ratio_temp))+geom_smooth(size=1,span=span,se=F)+ theme_classic()+
-        theme(axis.text.x = element_text(angle=45))+
-        xlab("Date") +  ggtitle(title)+
-        guides(color=guide_legend(override.aes=list(fill=NA)))  + 
-        theme(plot.title = element_text(hjust = 0.5))
-      output$plot <- renderPlot({
+      plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='line')
+      output$plot <- renderPlotly({
         plot})
     }
    })
