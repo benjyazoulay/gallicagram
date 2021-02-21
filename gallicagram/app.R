@@ -54,7 +54,7 @@ server <- function(input, output) {
       }
       
       colnames(tableau)<-c("date","nb_temp","base_temp")
-      tableau$date<-as.integer(tableau$date)
+      tableau.date = as.Date(as.character(tableau$date),format="%Y")
       tableau$nb_temp<-as.integer(tableau$nb_temp)
       tableau$base_temp<-as.integer(tableau$base_temp)
       tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
