@@ -1,35 +1,26 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(ggplot2)
 
 ui <- fluidPage(
    
    # Application title
-   titlePanel("Settings"),
+   titlePanel("Réglages"),
    
    sidebarLayout(
       sidebarPanel(
-        textInput("mot","ngram","PMF"),
-        numericInput("beginning","Début",1950),
-        numericInput("end","Fin",1955),
+        textInput("mot","ngram","Mendes-France"),
+        numericInput("beginning","Début",1952),
+        numericInput("end","Fin",1958),
          sliderInput("span",
                      "Lissage de la courbe :",
                      min = 0,
                      max = 10,
                      value = 0),
          selectInput("resolution", label = "Résolution :", choices = c("Année","Mois")),
-      ),
+        actionButton("do","Générer le graphique"),
+        ),
       
-      # Show a plot of the generated distribution
-      mainPanel(
+            mainPanel(
          plotOutput("plot")
       )
    )
@@ -37,7 +28,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  output$plot <- renderPlot({
+  observeEvent(input$do,{
     mot = str_replace(input$mot," ","%20")
     if(input$resolution=="Année"){
       width = input$end-input$beginning
@@ -68,15 +59,15 @@ server <- function(input, output) {
       #####AFFICHAGE DU GRAPHE
       title = paste("Fréquence d'usage de l'expression '", mot,sep="")
       title=paste(title,"' (Gallica-Presse)",sep="")
-      ggplot(tableau,aes(date,ratio_temp))+geom_smooth(size=1,span=span,se=F)+ theme_classic()+
+      plot = ggplot(tableau,aes(date,ratio_temp))+geom_smooth(size=1,span=span,se=F)+ theme_classic()+
         theme(axis.text.x = element_text(angle=45))+
         xlab("Date") +  ggtitle(title)+
         guides(color=guide_legend(override.aes=list(fill=NA)))  + 
         theme(plot.title = element_text(hjust = 0.5))
-    } 
+      output$plot <- renderPlot({
+        plot})
+    }
    })
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
-
