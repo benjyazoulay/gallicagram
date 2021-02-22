@@ -60,11 +60,10 @@ server <- function(input, output) {
       tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
       
       #####AFFICHAGE DU GRAPHE
-      Title = paste("Gallicagram a épluché", as.character(sum(tableau$base_temp)))
-      Title = Title %>% paste(' numéros, et trouvé "', mot,sep="") 
+      Title = paste("<b>Gallicagram a épluché", as.character(sum(tableau$base_temp)))
+      Title = Title %>% paste(' numéros,\n et trouvé "', mot,sep="") 
       Title = Title %>% paste(as.character(sum(tableau$nb_temp)),sep = '" dans ')
-      Title = Title %>% paste("d'entre eux")
-      #Title = list(title=Title,font = 70)
+      Title = Title %>% paste("d'entre eux</b>")
       plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='spline')
       y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
       x <- list(title = input$resolution,titlefont = 41)
