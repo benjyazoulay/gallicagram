@@ -11,7 +11,7 @@ ui <- fluidPage(
    
    sidebarLayout(
       sidebarPanel(
-        textInput("mot","ngram","Mendes-France"),
+        textInput("mot","Mot à chercher","Mendes-France"),
         numericInput("beginning","Début",1952),
         numericInput("end","Fin",1958),
          sliderInput("span",
@@ -39,7 +39,7 @@ server <- function(input, output) {
       tableau<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
       progress <- shiny::Progress$new()
       on.exit(progress$close())
-      progress$set(message = "Making plot", value = 0)
+      progress$set(message = "Patience...", value = 0)
       for (i in input$beginning:input$end){
         y<-as.character(i)  
         url<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=1&maximumRecords=1&page=1collapsing=false&exactSearch=true&query=text%20adj%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",y,"/01/01%22%20and%20gallicapublication_date%3C=%22",y,"/12/31%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
@@ -60,12 +60,15 @@ server <- function(input, output) {
       tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
       
       #####AFFICHAGE DU GRAPHE
-      title = paste("Fréquence d'usage de l'expression '", mot,sep="")
-      title=paste(title,"' (Gallica-Presse)",sep="")
+      Title = paste("Gallicagram a épluché", as.character(sum(tableau$base_temp)))
+      Title = Title %>% paste(' numéros, et trouvé "', mot,sep="") 
+      Title = Title %>% paste(as.character(sum(tableau$nb_temp)),sep = '" dans ')
+      Title = Title %>% paste("d'entre eux")
+      #Title = list(title=Title,font = 70)
       plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='spline')
-      y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = f)
-      x = list(title = input$resolution,titlefont = f)
-      plot = layout(plot, yaxis = y, xaxis = x)
+      y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
+      x <- list(title = input$resolution,titlefont = 41)
+      plot = layout(plot, yaxis = y, xaxis = x,title = Title)
       output$plot <- renderPlotly({
         plot})
     }
