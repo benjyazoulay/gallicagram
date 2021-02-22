@@ -62,7 +62,10 @@ server <- function(input, output) {
       #####AFFICHAGE DU GRAPHE
       title = paste("Fréquence d'usage de l'expression '", mot,sep="")
       title=paste(title,"' (Gallica-Presse)",sep="")
-      plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='line')
+      plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='spline')
+      y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = f)
+      x = list(title = input$resolution,titlefont = f)
+      plot = layout(plot, yaxis = y, xaxis = x)
       output$plot <- renderPlotly({
         plot})
     }
