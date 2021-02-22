@@ -61,7 +61,7 @@ server <- function(input, output) {
       
       #####AFFICHAGE DU GRAPHE
       Title = paste("<b>Gallicagram a épluché", as.character(sum(tableau$base_temp)))
-      Title = Title %>% paste(' numéros,\n et trouvé "', mot,sep="") 
+      Title = Title %>% paste(' numéros,\n et trouvé "', input$mot,sep="") 
       Title = Title %>% paste(as.character(sum(tableau$nb_temp)),sep = '" dans ')
       Title = Title %>% paste("d'entre eux</b>")
       plot = plot_ly(tableau, x=~date,y=~ratio_temp,type='scatter',mode='spline')
