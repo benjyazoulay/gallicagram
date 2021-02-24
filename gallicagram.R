@@ -85,3 +85,5 @@ tab6%>%subset(tab6$date>=ymd(19400101) & tab6$date<=ymd(19450101))%>% ggplot(aes
   xlab("Date")+ylab("Part des numéros faisant mention de l'expression \n 'Révolution nationale' dans le corpus Gallica-Presse")+
   ggtitle("Fréquence d'usage de l'expression 'Révolution nationale' durant l'Occupation (Gallica-Presse)")+
   ggsave("Fréquence d'usage de l'expression Révolution nationale durant l'Occupation.png",scale=2)
+
+#####
