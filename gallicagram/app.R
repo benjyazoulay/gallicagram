@@ -14,7 +14,8 @@ Plot <- function(data,input){
   span = 2/width + input$span*(width-2)/(10*width)
   tableau$row = 1:width
   tableau$loess = loess(data=tableau,ratio_temp~row,span=span)$fitted
-  plot = plot_ly(tableau, x=~date,y=~loess,type='scatter',mode='spline')
+  text = as.character(tableau$base_temp)
+  plot = plot_ly(tableau, x=~date,y=~loess,text=~base_temp,type='scatter',mode='spline',hoverinfo="text")
   y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
   x <- list(title = data[["resolution"]],titlefont = 41)
   plot = layout(plot, yaxis = y, xaxis = x,title = Title)
@@ -48,15 +49,16 @@ get_data <- function(mot,from,to,resolution){
       ngram_base<-as.character(read_xml(url_base))
       b<-str_extract(str_extract(ngram_base,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
       tableau[nrow(tableau)+1,] = NA
-      if(resolution=="Mois"){y = paste(y,z,sep="/")}
-      tableau[nrow(tableau),]<-c(y,a,b)
+      date=y
+      if(resolution=="Mois"){date = paste(y,z,sep="/")}
+      tableau[nrow(tableau),]<-c(date,a,b)
       }
       progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
      }
   
   colnames(tableau)<-c("date","nb_temp","base_temp")
   format = "%Y"
-  if(resolution=="Mois"){format=paste(format,"%m")}
+  if(resolution=="Mois"){format=paste(format,"%m",sep="/")}
   tableau.date = as.Date(as.character(tableau$date),format=format)
   tableau$nb_temp<-as.integer(tableau$nb_temp)
   tableau$base_temp<-as.integer(tableau$base_temp)
