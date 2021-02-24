@@ -3,6 +3,8 @@ library(ggplot2)
 library(plotly)
 library(stringr)
 library(xml2)
+data = list()
+
 
 Plot <- function(data,input){
   tableau = data[["tableau"]]
@@ -14,8 +16,8 @@ Plot <- function(data,input){
   span = 2/width + input$span*(width-2)/(10*width)
   tableau$row = 1:width
   tableau$loess = loess(data=tableau,ratio_temp~row,span=span)$fitted
-  text = as.character(tableau$base_temp)
-  plot = plot_ly(tableau, x=~date,y=~loess,text=~base_temp,type='scatter',mode='spline',hoverinfo="text")
+  tableau$hovers = str_c(tableau$date,": x = ",tableau$nb_temp,", N = ",tableau$base_temp)
+  plot = plot_ly(tableau, x=~date,y=~loess,text=~hovers,type='scatter',mode='spline',hoverinfo="text")
   y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
   x <- list(title = data[["resolution"]],titlefont = 41)
   plot = layout(plot, yaxis = y, xaxis = x,title = Title)
@@ -88,7 +90,8 @@ ui <- fluidPage(
         ),
       
             mainPanel(
-         plotlyOutput("plot")
+         plotlyOutput("plot"),
+         downloadButton('downloadData', 'Télécharger les données')
       )
    )
 )
@@ -96,9 +99,20 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output){
     observeEvent(input$do,{
-    data = get_data(input$mot,input$beginning,input$end,input$resolution)
-      output$plot <- renderPlotly({Plot(data,input)})
+    datasetInput <- reactive({
+        data$tableau})
+    df = get_data(input$mot,input$beginning,input$end,input$resolution)
+    output$plot <- renderPlotly({Plot(df,input)})
+    output$downloadData <- downloadHandler(
+      filename = function() {
+        paste('data-', Sys.Date(), '.csv', sep='')
+      },
+      content = function(con) {
+        write.csv(df$tableau, con)
+      })
     })
+  
+  
 }
 
 shinyApp(ui = ui, server = server)
