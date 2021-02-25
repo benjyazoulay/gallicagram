@@ -1,0 +1,10 @@
+name: gallicagram
+title:
+username:
+account: regicid
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3690695
+bundleId: 4271296
+url: https://regicid.shinyapps.io/gallicagram/
+when: 1614265902.69847
