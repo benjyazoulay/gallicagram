@@ -3,6 +3,8 @@ library(ggplot2)
 library(plotly)
 library(stringr)
 library(xml2)
+library(markdown)
+library(shinythemes)
 data = list()
 
 
@@ -21,11 +23,31 @@ Plot <- function(data,input){
   y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
   x <- list(title = data[["resolution"]],titlefont = 41)
   plot = layout(plot, yaxis = y, xaxis = x,title = Title)
-  return(plot)
+  if(input$barplot){
+    Title = paste("<b>Répartition du nombre de numéros présents dans la base\nde données Gallica-presse pour la période", as.character(tableau$date[1])," - ",as.character(tableau$date[length(tableau$date)]))
+    width = nrow(tableau)
+    span = 2/width + input$span*(width-2)/(10*width)
+    tableau$row = 1:width
+    tableau$hovers = str_c(tableau$date,": N = ",tableau$base_temp)
+    plot1 = plot_ly(tableau, x=~date,y=~base_temp,text=~hovers,type='bar',hoverinfo="text",marker = list(color='rgba(31, 119, 180,1)'))
+    y <- list(title = "Nombre de numéros dans Gallica-presse",titlefont = 41)
+    x <- list(title = data[["resolution"]],titlefont = 41)
+    plot1 = layout(plot1, yaxis = y, xaxis = x,title = Title,showlegend = FALSE)
+    plot = subplot(plot,plot1,nrows = 2,legend=NULL,shareX = T)
+    return(plot)
+  } else{
+    return(plot)
+  }
+}
+
+Plot1 <- function(data,input){
+  tableau = data[["tableau"]]
+
+  return(plot1)
 }
 
 get_data <- function(mot,from,to,resolution){
-  mot = str_replace(mot," ","%20")
+    mot = str_replace(mot," ","%20")
     tableau<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
     progress <- shiny::Progress$new()
     on.exit(progress$close())
@@ -66,16 +88,16 @@ get_data <- function(mot,from,to,resolution){
   tableau$base_temp<-as.integer(tableau$base_temp)
   tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
   data = list(tableau,mot,resolution)
+  mot = str_replace(mot,"%20"," ")
   names(data) = c("tableau","mot","resolution")
   return(data)}
 
 
-ui <- fluidPage(
-   
-   # Application title
-   titlePanel("Réglages"),
-   
-   sidebarLayout(
+ui <- navbarPage("Gallicagram",
+   tabPanel("Graphique",fluidPage(),
+    tags$head(
+    tags$style(HTML(".shiny-output-error-validation{color: red;}"))),
+    pageWithSidebar(headerPanel('Réglages'),
       sidebarPanel(
         textInput("mot","Mot à chercher","Mendes-France"),
         numericInput("beginning","Début",1952),
@@ -87,22 +109,29 @@ ui <- fluidPage(
                      value = 0),
          selectInput("resolution", label = "Résolution :", choices = c("Année","Mois")),
         actionButton("do","Générer le graphique"),
+        checkboxInput("barplot", "Afficher la quantité de données", value = FALSE),
         ),
       
-            mainPanel(
-         plotlyOutput("plot"),
-         downloadButton('downloadData', 'Télécharger les données')
+            mainPanel(plotlyOutput("plot"),
+                      headerPanel(""),
+                      plotlyOutput("plot1"),
+         downloadButton('downloadData', 'Télécharger les données')))),
+         tabPanel("Notice",shiny::includeMarkdown("Notice.md")),
+         tabPanel("Corpus",plotlyOutput("corpus"))
       )
-   )
-)
+   
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output){
-    observeEvent(input$do,{
+  output$corpus = renderPlotly(Barplot())
+   observeEvent(input$do,{
     datasetInput <- reactive({
         data$tableau})
     df = get_data(input$mot,input$beginning,input$end,input$resolution)
     output$plot <- renderPlotly({Plot(df,input)})
+    if(input$barplot){
+    output$plot1 <- renderPlotly({Plot1(df,input)})}
     output$downloadData <- downloadHandler(
       filename = function() {
         paste('data-', Sys.Date(), '.csv', sep='')
@@ -114,5 +143,13 @@ server <- function(input, output){
   
   
 }
+Barplot <- function(){table<-read.csv("base_gallica.csv")
+table$hovers = str_c(table$date,": N = ",table$base_temp)
+plot2<-plot_ly(table, x=~date,y=~base_temp,text=~hovers,type='bar',hoverinfo="text")
+Title = paste("<b>Répartition des numéros dans Gallica-presse<b>")
+y <- list(title = "Nombre de numéros dans Gallica-presse",titlefont = 41)
+x <- list(title = "Date",titlefont = 41)
+plot2 = layout(plot2, yaxis = y, xaxis = x,title = Title)
+plot2}
 
 shinyApp(ui = ui, server = server)
