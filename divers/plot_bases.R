@@ -11,7 +11,7 @@ x <- list(title = "Date",titlefont = 41)
 plot2 = layout(plot2, yaxis = y, xaxis = x,title = Title)
 plot2
 
-table<-read.csv("base_gallica.csv")
+table<-read.csv("base_gallica_presse.csv")
 table$hovers = str_c(table$date,": N = ",table$base_temp)
 plot3<-plot_ly(table, x=~date,y=~base_temp,text=~hovers,type='bar',mode='spline',hoverinfo="text")
 Title = paste("<b>Répartition des numéros dans Gallica-presse<b>")
