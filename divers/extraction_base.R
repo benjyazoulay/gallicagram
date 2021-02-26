@@ -144,8 +144,29 @@ tableau$ark=str_extract(tableau$identifier,"cb[:alnum:]+/")
 tableau$ark=str_remove_all(tableau$ark,"/")
 
 tableau$duree_publi<-NA
-tableau$date_correcte<-NA
-tableau$date_correcte<-str_extract_all(tableau_date,".........")
-tableau$date_correcte[str_detect(tableau$date_correcte,"[\\p{Punct}&&[^-]]"),]<-NA
-tableau$duree_publi<-as.integer(tableau$duree_publi)
+tableau$date_deb<-NA
+tableau$date_fin<-NA
 
+for (i in 1:length(tableau$identifier)) 
+{tryCatch({
+  ark=str_extract(tableau$identifier[i],"cb[:alnum:]+/")
+  ark=str_remove_all(ark,"/")
+  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=0&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"_date%22%20sortby%20dc.date/sort.ascending")
+  ngram<-as.character(read_xml(url))
+  a<-str_extract(str_extract(ngram,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
+  b=str_extract(str_extract(ngram,"date>.........."),"[:digit:].........")
+  b=str_remove_all(b,"[:alpha:]")
+  b=str_remove_all(b,":")
+  b=str_remove_all(b,"/")
+  b=str_remove_all(b,"<")
+  tableau$date_deb[i]<-b
+  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=",a,"&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"_date%22%20sortby%20dc.date/sort.ascending")
+  ngram<-as.character(read_xml(url))
+  c=str_extract(str_extract(ngram,"date>.........."),"[:digit:].........")
+  c=str_remove_all(c,"[:alpha:]")
+  c=str_remove_all(c,":")
+  c=str_remove_all(c,"/")
+  c=str_remove_all(c,"<")
+  tableau$date_fin[i]<-c
+  print(i)
+}, error=function(e){})}
