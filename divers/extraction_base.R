@@ -9,37 +9,37 @@ library(xml2)
 library(tidyverse)
 
 #####GALLICAPRESSE
-#Gallicapresse révèle la structure des données utilisées dans l'analyse de notoriété réalisée par GALLICAGRAM
-#Les affichages effectués grâce à cet outil révèlent la structure des données selon :
-#Les titres de presse les plus représentés
-#L'origine géographique des mentions (ville de publication de ces titres de presse)
+#Gallicapresse rÃ©vÃ¨le la structure des donnÃ©es utilisÃ©es dans l'analyse de notoriÃ©tÃ© rÃ©alisÃ©e par GALLICAGRAM
+#Les affichages effectuÃ©s grÃ¢ce Ã  cet outil rÃ©vÃ¨lent la structure des donnÃ©es selon :
+#Les titres de presse les plus reprÃ©sentÃ©s
+#L'origine gÃ©ographique des mentions (ville de publication de ces titres de presse)
 #Cet outil affiche des analyses en termes absolus et relatifs.
-#Deux résolutions d'affichage sont disponibles : à l'année et au mois
+#Deux rÃ©solutions d'affichage sont disponibles : Ã  l'annÃ©e et au mois
 
 #####EXTRACTION D'UN RAPPORT DE RECHERCHE
-#La fonction d'extraction de rapport de recherche depuis gallica fonctionnant mal, nous reprenons ici une partie de l'outil gargallica qui exécute parfaitement cette tâche
+#La fonction d'extraction de rapport de recherche depuis gallica fonctionnant mal, nous reprenons ici une partie de l'outil gargallica qui exÃ©cute parfaitement cette tÃ¢che
 
-setwd("C:/Users/Benjamin/Downloads/") #inscrivez ici votre répertoire de travail
+setwd("C:/Users/Benjamin/Downloads/") #inscrivez ici votre rÃ©pertoire de travail
 #####GARGALLICA###############
 i = 1
 
-# Indiquez la question (la requête CQL visible dans l'URL query = () )
-# Il faut recopier la question posée sur gallica.bnf.fr
+# Indiquez la question (la requÃªte CQL visible dans l'URL query = () )
+# Il faut recopier la question posÃ©e sur gallica.bnf.fr
 
 question <- '(dc.type%20all%20"fascicule")%20sortby%20dc.date/sort.ascending&suggest=10&keywords='
 
 page <- function(i)xml2::read_xml(paste0('http://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&query=(', question,')&collapsing=true&maximumRecords=50&startRecord=', i))
 
 
-# Première 50 réponses (initialiser la structure xml avec un premier coup)
+# PremiÃ¨re 50 rÃ©ponses (initialiser la structure xml avec un premier coup)
 tot <- page(1)
-# récupérer le nombre total de réponses
+# rÃ©cupÃ©rer le nombre total de rÃ©ponses
 te <- xml2::as_list(tot)
 nmax <- as.integer(unlist(te$searchRetrieveResponse$numberOfRecords))
 # nmax <- 7853
 
 # Boucle sur la suite, 50 par 50
-# Ajouter au document xml tot les réponses des autres pages
+# Ajouter au document xml tot les rÃ©ponses des autres pages
 for (j in seq(51, nmax, by = 50)){
   temp <- page(j)
   print(j)
@@ -125,3 +125,27 @@ total$publisher<-str_remove_all(total$publisher,'c"')
 total$publisher<-str_remove_all(total$publisher,'"')
 total$publisher<-str_remove_all(total$publisher,'character0')
 total$identifier<-str_remove_all(total$identifier,"([:blank:].+)")
+
+tableau=total
+tableau$nb_numeros<-NA
+
+for (i in 1:length(tableau$identifier)) 
+{tryCatch({
+  ark=str_extract(tableau$identifier[i],"cb[:alnum:]+/")
+  ark=str_remove_all(ark,"/")
+  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=0&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"_date%22")
+  ngram<-as.character(read_xml(url))
+  a<-str_extract(str_extract(ngram,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
+  tableau$nb_numeros[i]<-as.integer(a)
+  print(i)
+}, error=function(e){})}
+
+tableau$ark=str_extract(tableau$identifier,"cb[:alnum:]+/")
+tableau$ark=str_remove_all(tableau$ark,"/")
+
+tableau$duree_publi<-NA
+tableau$date_correcte<-NA
+tableau$date_correcte<-str_extract_all(tableau_date,".........")
+tableau$date_correcte[str_detect(tableau$date_correcte,"[\\p{Punct}&&[^-]]"),]<-NA
+tableau$duree_publi<-as.integer(tableau$duree_publi)
+
