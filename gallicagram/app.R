@@ -2,6 +2,7 @@ library(shiny)
 library(ggplot2)
 library(plotly)
 library(stringr)
+
 library(xml2)
 library(markdown)
 library(shinythemes)
@@ -14,20 +15,24 @@ Plot <- function(data,input){
   Title = Title %>% paste(' numéros,\n et trouvé "', data[["mot"]],sep="") 
   Title = Title %>% paste(as.character(sum(tableau$nb_temp)),sep = '" dans ')
   Title = Title %>% paste("d'entre eux</b>")
-  width = nrow(tableau)
+  width = length(unique(tableau$date))
   span = 2/width + input$span*(width-2)/(10*width)
-  tableau$row = 1:width
-  tableau$loess = loess(data=tableau,ratio_temp~row,span=span)$fitted
+  #tableau$row = 1:width
+  tableau$loess = tableau$nb_temp
+  for(mot in str_split(data$mot,",")[[1]]){
+    z = which(tableau$mot==mot)
+    tableau$loess[z] = loess(data=tableau[z,],ratio_temp~as.integer(date),span=span)$fitted
+  }
   tableau$hovers = str_c(tableau$date,": x = ",tableau$nb_temp,", N = ",tableau$base_temp)
-  plot = plot_ly(tableau, x=~date,y=~loess,text=~hovers,type='scatter',mode='spline',hoverinfo="text")
+  plot = plot_ly(tableau, x=~date,y=~loess,text=~hovers,color =~mot,type='scatter',mode='spline',hoverinfo="text")
   y <- list(title = "Fréquence d'occurence dans Gallica-presse",titlefont = 41)
   x <- list(title = data[["resolution"]],titlefont = 41)
   plot = layout(plot, yaxis = y, xaxis = x,title = Title)
+  if(length(grep(",",data$mot))==0){plot = layout(plot,showlegend=FALSE)}
   if(input$barplot){
     Title = paste("<b>Répartition du nombre de numéros présents dans la base\nde données Gallica-presse pour la période", as.character(tableau$date[1])," - ",as.character(tableau$date[length(tableau$date)]))
     width = nrow(tableau)
     span = 2/width + input$span*(width-2)/(10*width)
-    tableau$row = 1:width
     tableau$hovers = str_c(tableau$date,": N = ",tableau$base_temp)
     plot1 = plot_ly(tableau, x=~date,y=~base_temp,text=~hovers,type='bar',hoverinfo="text",marker = list(color='rgba(31, 119, 180,1)'))
     y <- list(title = "Nombre de numéros dans Gallica-presse",titlefont = 41)
@@ -48,11 +53,13 @@ Plot1 <- function(data,input){
 
 get_data <- function(mot,from,to,resolution){
     mot = str_replace(mot," ","%20")
-    tableau<-as.data.frame(matrix(nrow=0,ncol=3),stringsAsFactors = FALSE)
+    mots = str_split(mot,",")[[1]]
+    tableau<-as.data.frame(matrix(nrow=0,ncol=4),stringsAsFactors = FALSE)
     progress <- shiny::Progress$new()
     on.exit(progress$close())
     progress$set(message = "Patience...", value = 0)
     for (i in from:to){
+    for(mot in mots){
       end_of_month = c(31,28,31,30,31,30,31,31,30,31,30,31)
       if( i%%4==0){end_of_month[2]=29} #Ne pas oublier les années bisextiles (merci Maxendre de m'y avoir fait penser)
       y<-as.character(i)
@@ -75,20 +82,20 @@ get_data <- function(mot,from,to,resolution){
       tableau[nrow(tableau)+1,] = NA
       date=y
       if(resolution=="Mois"){date = paste(y,z,sep="/")}
-      tableau[nrow(tableau),]<-c(date,a,b)
+      tableau[nrow(tableau),]<-c(date,a,b,mot)
       }
-      progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
-     }
-  
-  colnames(tableau)<-c("date","nb_temp","base_temp")
+    }
+    progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
+    }
+  colnames(tableau)<-c("date","nb_temp","base_temp","mot")
   format = "%Y"
   if(resolution=="Mois"){format=paste(format,"%m",sep="/")}
   tableau.date = as.Date(as.character(tableau$date),format=format)
   tableau$nb_temp<-as.integer(tableau$nb_temp)
   tableau$base_temp<-as.integer(tableau$base_temp)
   tableau$ratio_temp<-tableau$nb_temp/tableau$base_temp
-  data = list(tableau,mot,resolution)
-  mot = str_replace(mot,"%20"," ")
+  mots = str_replace(mots,"%20"," ")
+  data = list(tableau,paste(mots,collapse=","),resolution)
   names(data) = c("tableau","mot","resolution")
   return(data)}
 
