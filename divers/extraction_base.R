@@ -158,3 +158,34 @@ for (i in 1:length(tableau$identifier))
   tableau$date_fin[i]<-c
   print(i)
 }, error=function(e){})}
+
+
+tableau$deb_bis<-tableau$date_deb
+tableau$fin_bis<-tableau$date_fin
+for (i in 1:length(tableau$deb_bis)) {
+  if(is.na(tableau$deb_bis[i])){}
+  else if (str_length(tableau$deb_bis[i])==4){tableau$deb_bis[i]<-str_c(tableau$deb_bis[i],"-01-01")}
+  }
+for (i in 1:length(tableau$deb_bis)) {
+  if(is.na(tableau$deb_bis[i])){}
+  else if (str_length(tableau$deb_bis[i])==7){tableau$deb_bis[i]<-str_c(tableau$deb_bis[i],"-01")}
+}
+for (i in 1:length(tableau$deb_bis)) {
+  if(is.na(tableau$fin_bis[i])){}
+  else if (str_length(tableau$fin_bis[i])==4){tableau$fin_bis[i]<-str_c(tableau$fin_bis[i],"-12-31")}
+}
+for (i in 1:length(tableau$deb_bis)) {
+  if(is.na(tableau$fin_bis[i])){}
+  else if (str_length(tableau$fin_bis[i])==7){tableau$fin_bis[i]<-str_c(tableau$fin_bis[i],"-31")}
+  
+}
+
+tableau$duree_publi=as.integer(as.Date(tableau$fin_bis)-as.Date(tableau$deb_bis))
+
+tableau$is_quotidien<-FALSE
+for (i in 1:length(tableau$is_quotidien)) {
+  if(is.na(tableau$nb_numeros[i]/tableau$duree_publi[i])){}
+  else if(tableau$duree_publi[i]<366){}
+  else if(tableau$nb_numeros[i]/tableau$duree_publi[i]>52/365){tableau$is_quotidien[i]<-TRUE}
+  
+}
