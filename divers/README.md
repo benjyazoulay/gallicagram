@@ -27,5 +27,5 @@ recherche multititres (deux titres) par ark et pour un terme entre deux dates :
  - url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=0&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark1,"_date%22",titre2,"%20and%20%28gallica%20adj%20%22",mot,"%22%29%20sortby%20dc.date%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)")
 
 
-recherche dans les livres de gallica par terme entre deux dates : 
+recherche dans les livres de gallica par terme entre deux dates (date=année seule): 
 str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&exactSearch=true&collapsing=false&version=1.2&query=text%20adj%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22monographie%22)%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
