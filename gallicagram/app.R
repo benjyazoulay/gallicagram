@@ -56,9 +56,9 @@ get_data <- function(mot,from,to,resolution){
     mot = str_replace(mot," ","%20")
     mots = str_split(mot,",")[[1]]
     tableau<-as.data.frame(matrix(nrow=0,ncol=4),stringsAsFactors = FALSE)
-    #progress <- shiny::Progress$new()
-    #on.exit(progress$close())
-    #progress$set(message = "Patience...", value = 0)
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Patience...", value = 0)
     for (i in from:to){
     for(mot in mots){
       end_of_month = c(31,28,31,30,31,30,31,31,30,31,30,31)
@@ -74,10 +74,10 @@ get_data <- function(mot,from,to,resolution){
             if(nchar(z)<2){z<-str_c("0",z)}
             beginning = str_c(y,"/",z,"/01")
             end = str_c(y,"/",z,"/",end_of_month[j])}
-      url<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=1&maximumRecords=1&page=1collapsing=false&exactSearch=true&query=text%20adj%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
+      url<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&exactSearch=true&maximumRecords=1&page=1&collapsing=false&version=1.2&query=text%20all%20%22",mot,"%22%20%20and%20(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)%20sortby%20dc.date/sort.ascending&suggest=10&keywords=",mot)
       ngram<-as.character(read_xml(url))
       a<-str_extract(str_extract(ngram,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
-      url_base<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=1&maximumRecords=1&page=1collapsing=false&version=1.2&query=(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)&suggest=10&keywords=")
+      url_base<-str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&exactSearch=true&maximumRecords=1&page=1&collapsing=false&version=1.2&query=(dc.type%20all%20%22fascicule%22)%20and%20(gallicapublication_date%3E=%22",beginning,"%22%20and%20gallicapublication_date%3C=%22",end,"%22)&suggest=10&keywords=")
       ngram_base<-as.character(read_xml(url_base))
       b<-str_extract(str_extract(ngram_base,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
       tableau[nrow(tableau)+1,] = NA
@@ -86,7 +86,7 @@ get_data <- function(mot,from,to,resolution){
       tableau[nrow(tableau),]<-c(date,a,b,mot)
       }
     }
-    #progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
+    progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
     }
   colnames(tableau)<-c("date","nb_temp","base_temp","mot")
   format = "%Y"
