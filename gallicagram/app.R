@@ -20,6 +20,7 @@ Plot <- function(data,input){
   #tableau$row = 1:width
   tableau$loess = tableau$nb_temp
   for(mot in str_split(data$mot,",")[[1]]){
+    mot = str_replace(mot," ","%20")
     z = which(tableau$mot==mot)
     tableau$loess[z] = loess(data=tableau[z,],ratio_temp~as.integer(date),span=span)$fitted
   }
@@ -55,9 +56,9 @@ get_data <- function(mot,from,to,resolution){
     mot = str_replace(mot," ","%20")
     mots = str_split(mot,",")[[1]]
     tableau<-as.data.frame(matrix(nrow=0,ncol=4),stringsAsFactors = FALSE)
-    progress <- shiny::Progress$new()
-    on.exit(progress$close())
-    progress$set(message = "Patience...", value = 0)
+    #progress <- shiny::Progress$new()
+    #on.exit(progress$close())
+    #progress$set(message = "Patience...", value = 0)
     for (i in from:to){
     for(mot in mots){
       end_of_month = c(31,28,31,30,31,30,31,31,30,31,30,31)
@@ -85,7 +86,7 @@ get_data <- function(mot,from,to,resolution){
       tableau[nrow(tableau),]<-c(date,a,b,mot)
       }
     }
-    progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
+    #progress$inc(1/(to-from), detail = paste("Gallicagram ratisse l'an", i))
     }
   colnames(tableau)<-c("date","nb_temp","base_temp","mot")
   format = "%Y"
