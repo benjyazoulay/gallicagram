@@ -128,8 +128,9 @@ total$identifier<-str_remove_all(total$identifier,"([:blank:].+)")
 
 tableau=total
 tableau$nb_numeros<-NA
-tableau$ark=str_extract(tableau$identifier,"12148/[:alnum:]+")
-tableau$ark=str_remove_all(tableau$ark,"12148/")
+tableau$ark<-tableau$identifier
+tableau$ark<-str_remove_all(tableau$ark,"https://gallica.bnf.fr/ark:/12148/")
+tableau$ark<-str_replace_all(tableau$ark,"/","_")
 
 tableau$duree_publi<-NA
 tableau$date_deb<-NA
@@ -138,7 +139,7 @@ tableau$date_fin<-NA
 for (i in 1:length(tableau$identifier)) 
 {tryCatch({
   ark=tableau$ark[i]
-  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=0&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"_date%22%20sortby%20dc.date/sort.ascending")
+  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=0&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"%22%20sortby%20dc.date/sort.ascending")
   ngram<-as.character(read_xml(url))
   a<-str_extract(str_extract(ngram,"numberOfRecordsDecollapser&gt;+[:digit:]+"),"[:digit:]+")
   tableau$nb_numeros[i]<-as.integer(a)
@@ -148,7 +149,7 @@ for (i in 1:length(tableau$identifier))
   b=str_remove_all(b,"/")
   b=str_remove_all(b,"<")
   tableau$date_deb[i]<-b
-  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=",a,"&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"_date%22%20sortby%20dc.date/sort.ascending")
+  url=str_c("https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&startRecord=",a,"&maximumRecords=1&page=1&collapsing=false&exactSearch=true&query=arkPress%20all%20%22",ark,"%22%20sortby%20dc.date/sort.ascending")
   ngram<-as.character(read_xml(url))
   c=str_extract(str_extract(ngram,"date>.........."),"[:digit:].........")
   c=str_remove_all(c,"[:alpha:]")
@@ -188,4 +189,19 @@ for (i in 1:length(tableau$is_quotidien)) {
   else if(tableau$duree_publi[i]<366){}
   else if(tableau$nb_numeros[i]/tableau$duree_publi[i]>52/365){tableau$is_quotidien[i]<-TRUE}
   
+}
+
+  tableau$sdewey<-""
+tableau$sdewey_nom<-""
+for (i in 1:length(tableau$ark)) {
+  url<-str_c("https://gallica.bnf.fr/services/Categories?SRU=arkPress%20all%20%22",tableau$ark[i],"%22")
+  extrait<-as.character(paste(read_html(url)))
+  extrait<-str_extract(extrait,"sdewey.+howMany")
+  tableau$sdewey[i]<-str_extract(extrait,"[:digit:]+")
+  extrait<-str_extract(extrait,"libelleValue.+")
+  extrait<-str_remove_all(extrait,"libelleValue")
+  extrait<-str_remove_all(extrait,"howMany")
+  extrait<-str_remove_all(extrait,"[:punct:]")
+  tableau$sdewey_nom[i]<-extrait
+  print(i)
 }
