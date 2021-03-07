@@ -1,6 +1,7 @@
 # Idées
 
 ## Gallicagram
+- bug : axe y du barplot en subplot ; annotations en mode recherche par titres (affichage des titres derrière la mention "Corpus :"
 - double clic sur un point du graphique pour lancer dans gallica la recherche correspondante (renvoi à Gallica)
 - option delta entre deux courbes ->nouvelle courbe
 - coefficient de corrélation, significativité : y/années et entre les deux premiers termes : checkbox pour affichage
