@@ -3,7 +3,7 @@
 ## Gallicagram
 - double clic sur un point du graphique pour lancer dans gallica la recherche correspondante (renvoi à Gallica)
 - option delta entre deux courbes ->nouvelle courbe
-- coefficient de corrélation, significativité : y/années et entre deux courbes : checkbox pour affichage
+- coefficient de corrélation, significativité : y/années et entre les deux premiers termes : checkbox pour affichage
 - sous-corpus : les quotidiens
 
 ## Gallicapresse
