@@ -2,7 +2,6 @@
 
 ## Gallicagram
 - double clic sur un point du graphique pour lancer dans gallica la recherche correspondante (renvoi à Gallica)
-- exemple d'affichage interactif au démarrage
 - option delta entre deux courbes ->nouvelle courbe
 - coefficient de corrélation, significativité : y/années et entre deux courbes : checkbox pour affichage
 - sous-corpus : les quotidiens
