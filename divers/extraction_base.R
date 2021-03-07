@@ -205,3 +205,32 @@ for (i in 1:length(tableau$ark)) {
   tableau$sdewey_nom[i]<-extrait
   print(i)
 }
+
+
+tableau$sdewey_nom<-str_replace_all(tableau$sdewey_nom,"u0027","'")
+tableau$sdewey_nom2<-str_replace_all(tableau$sdewey_nom2,"u0027","'")
+tableau$sdewey2<-""
+
+for (i in 1:length(tableau$ark)) {
+  
+  if (length(unlist(str_split(tableau$sdewey_nom[i],"1valuesdeweycleanValue")))>=2){
+  tableau$sdewey2[i]<-unlist(str_split(tableau$sdewey_nom[i],"1valuesdeweycleanValue"))[[2]]
+  tableau$sdewey_nom[i]<-unlist(str_split(tableau$sdewey_nom[i],"1valuesdeweycleanValue"))[[1]]
+  print(i)}
+  
+}
+tableau$sdewey_nom2<-""
+for (i in 1:length(tableau$ark)) {
+  if (length(unlist(str_split(tableau$sdewey2[i],"[:digit:]+")))>=2){
+    tableau$sdewey_nom2[i]<-unlist(str_split(tableau$sdewey2[i],"[:digit:]+"))[[2]]
+    tableau$sdewey2[i]<-str_extract(tableau$sdewey2[i],"[:digit:]+")
+    print(i)
+    }
+  
+}
+tableau$sdewey2[is.na(tableau$sdewey2)]<-""
+tableau$sdewey_nom<-str_replace_all(tableau$sdewey_nom,"Généralités"," Généralités")
+tableau$sdewey_nom2<-str_replace_all(tableau$sdewey_nom2,"Généralités"," Généralités")
+
+
+write.csv(tableau,"liste_journaux_gallica_quotidiens.csv",fileEncoding = "UTF-8",row.names = F)
