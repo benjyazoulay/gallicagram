@@ -8,10 +8,7 @@
 
 ## Gallicapresse
 - bug : barre de chargement
-- structure géographique des données (réfléchir sur la visualisation : une carte sur toute la période/une carte dynamique ou avec sélection de l'année/un histogramme présentant la distribution dans les villes principales de publication pour toute la période/le même histogramme dynamique ou avec sélection de l'année dans une barre continue)
-- structure des données selon le thème du journal
 - structure des données selon le type de journal (quotidien/hebdomadaire/mensuel/etc.)
-- exemple d'affichage interactif au démarrage
 
 ## N-GRAMME
 - Récupérer les données des corpus Livre et Presse en texte brut par année
