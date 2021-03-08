@@ -1,7 +1,7 @@
 # Idées
 
 ## Gallicagram
-- bug : axe y du barplot en subplot ; annotations en mode recherche par titres (affichage des titre derrière la mention "Corpus :")
+- bug : annotations en mode recherche par titres (affichage des titre derrière la mention "Corpus :")
 - double clic sur un point du graphique pour lancer dans gallica la recherche correspondante (renvoi à Gallica)
 - option delta entre deux courbes ->nouvelle courbe
 - sous-corpus : les quotidiens
