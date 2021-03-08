@@ -7,7 +7,6 @@
 - sous-corpus : les quotidiens
 
 ## Gallicapresse
-- bug : barre de chargement
 - structure des données selon le type de journal (quotidien/hebdomadaire/mensuel/etc.)
 
 ## N-GRAMME
