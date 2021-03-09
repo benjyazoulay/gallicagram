@@ -7,7 +7,6 @@
 - sous-corpus : les quotidiens
 
 ## Gallicapresse
-- input au format date
 
 ## N-GRAMME
 - Récupérer les données des corpus Livre et Presse en texte brut par année
