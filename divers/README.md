@@ -2,7 +2,6 @@
 
 ## Gallicagram
 - bug : annotations en mode recherche par titres (affichage des titre derrière la mention "Corpus :")
-- option delta entre deux courbes ->nouvelle courbe
 - sous-corpus : les quotidiens
 
 ## Gallicapresse
